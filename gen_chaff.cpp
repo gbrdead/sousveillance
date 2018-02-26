@@ -8,7 +8,7 @@
 #include <cctype>
 
 
-const unsigned CHAFF_SIZE = 1000;
+const unsigned CHAFF_SIZE = 10000;
 
 class ChaffGenerator
 {
