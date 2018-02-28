@@ -1,6 +1,3 @@
-#include "chaff.h"
-#include "rot13.h"
-
 #define _GNU_SOURCE
 #include <sched.h>
 
@@ -13,9 +10,26 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "chaff.h"
+#include "rot13.h"
 
-static const char* const* volatile password = &passwords[FAKE_PASSWORD_INDEX];
-static const char* const* volatile flag = &flags[FAKE_FLAG_INDEX];
+
+static const struct EncryptedString* volatile password = &passwords[FAKE_PASSWORD_INDEX];
+static const struct EncryptedString* volatile volatile flag = &flags[FAKE_FLAG_INDEX];
+
+__attribute__ ((always_inline))
+static inline void switchToFake(void)
+{
+    password += (FAKE_PASSWORD_INDEX - REAL_PASSWORD_INDEX);
+    flag += (FAKE_FLAG_INDEX - REAL_FLAG_INDEX);
+}
+
+__attribute__ ((always_inline))
+static inline void switchToReal(void)
+{
+    password += (REAL_PASSWORD_INDEX - FAKE_PASSWORD_INDEX);
+    flag += (REAL_FLAG_INDEX - FAKE_FLAG_INDEX);
+}
 
 
 static int isTraced(void)
@@ -49,7 +63,6 @@ error0:
     return result;
 }
 
-
 static void debuggerWatcher(void)
 {
     struct timespec sleepInterval = {0, 1000};   // 1 us
@@ -62,13 +75,11 @@ static void debuggerWatcher(void)
 
         if (isTraced())
         {
-            password = &passwords[FAKE_PASSWORD_INDEX];
-            flag = &flags[FAKE_FLAG_INDEX];
+            switchToFake();
             break;
         }
     }
 }
-
 
 #define THREAD_STACK_SIZE 10240     // 1 KB seems to be not enough.
 
@@ -77,8 +88,7 @@ static void preMain(void)
 {
     if (!isTraced())
     {
-        password = &passwords[REAL_PASSWORD_INDEX];
-        flag = &flags[REAL_FLAG_INDEX];
+        switchToReal();
 
 
 //        pthread_t threadPid;
@@ -141,28 +151,26 @@ int main(int argc, char *argv[])
     size_t n = 0;
 
     printf("Enter the password: ");
-    ssize_t passwordLength = getline(&line, &n, stdin);
-    if (passwordLength < 0)
+    ssize_t lineLength = getline(&line, &n, stdin);
+    if (lineLength < 0)
     {
         perror("getline");
         exit(1);
     }
-    line[passwordLength-1] = '\0';
+    line[lineLength-1] = '\0';
 
-    char *decryptedPassword = strdup(*password);
-    rot13(decryptedPassword);
-    if (strcmp(line, decryptedPassword) == 0)
+    char decryptedPassword[ENCRYPTED_STRING_MAX_SIZE];
+    decryptString(password, decryptedPassword);
+    if (strncmp(line, decryptedPassword, ENCRYPTED_STRING_MAX_SIZE * sizeof(char)) == 0)
     {
-        char *decryptedFlag = strdup(*flag);
-        rot13(decryptedFlag);
-        printf("The password is correct.\nThe flag is: %s\n", decryptedFlag);
-        free(decryptedFlag);
+        char decryptedFlag[ENCRYPTED_STRING_MAX_SIZE];
+        decryptString(flag, decryptedFlag);
+        printf("The password is correct.\nThe flag is: %.*s\n", ENCRYPTED_STRING_MAX_SIZE, decryptedFlag);
     }
     else
     {
         printf("The password is wrong.\n");
     }
-    free(decryptedPassword);
     free(line);
 
     return 0;

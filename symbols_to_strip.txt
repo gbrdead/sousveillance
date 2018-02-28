@@ -3,3 +3,5 @@ flag
 isTraced
 debuggerWatcher
 preMain
+switchToFake
+switchToReal

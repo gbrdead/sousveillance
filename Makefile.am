@@ -11,7 +11,7 @@ gen_chaff_SOURCES = gen_chaff.cpp rot13.c rot13.h
 
 chaff.c: chaff.h
 chaff.h: gen_chaff
-	$(builddir)/gen_chaff $(srcdir)/words_alpha.txt
+	$(builddir)/gen_chaff
 
 clean-local:
 	rm -f $(BUILT_SOURCES)
