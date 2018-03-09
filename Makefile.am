@@ -1,4 +1,4 @@
-EXTRA_DIST = words_alpha.txt symbols_to_strip.txt
+EXTRA_DIST = symbols_to_strip.txt
 BUILT_SOURCES = chaff.c chaff.h
 
 bin_PROGRAMS = ptooie

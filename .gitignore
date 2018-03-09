@@ -20,3 +20,5 @@ missing
 config.h
 config.h.in
 stamp-h1
+ctf_ptooie-*.tar.*
+.settings
