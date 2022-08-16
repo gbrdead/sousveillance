@@ -131,7 +131,7 @@ static void preMain(void)
         asm     // syscall exit
         (
             "sub        %%rdi, %%rdi    \n"
-            "mov        $0x3c, %%eax    \n"
+            "mov        $0x3c, %%rax    \n"
             "syscall                    \n"
             :
             :

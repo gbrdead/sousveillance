@@ -1,4 +1,4 @@
-AC_INIT([ctf_ptooie], [1.1.0], [gbr@voidland.org])
+AC_INIT([ctf_ptooie], [1.1.1], [gbr@voidland.org])
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz])
 AC_CONFIG_HEADERS(config.h)
 
