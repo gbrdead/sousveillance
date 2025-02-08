@@ -83,6 +83,7 @@ static void debuggerWatcher(void)
 
 #define THREAD_STACK_SIZE 10240     // 1 KB seems to be not enough.
 
+// Not called by main() - hopefully, it will look like unreachable code.
 __attribute__ ((constructor))
 static void preMain(void)
 {
@@ -93,7 +94,7 @@ static void preMain(void)
 
 //        pthread_t threadPid;
 //        pthread_create(&threadPid, NULL, debuggerWatcher, NULL);
-// The code below tries to emulate the commented code above.
+// The code below tries to emulate the commented code above. It starts the thread without linking to libpthread in order to avoid suspicion.
 
         const long threadAttr = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_THREAD | CLONE_IO | CLONE_SYSVSEM;
         uint8_t* stack = malloc(THREAD_STACK_SIZE * sizeof(uint8_t));   // The stack cannot be statically allocated for unknown reasons.
