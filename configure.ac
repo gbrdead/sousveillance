@@ -1,4 +1,4 @@
-AC_INIT([sousveillance], [1.1.1], [gbr@voidland.org])
+AC_INIT([sousveillance], [1.1.2], [gbr@voidland.org])
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz])
 AC_CONFIG_HEADERS(config.h)
 
